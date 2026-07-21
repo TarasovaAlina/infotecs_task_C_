@@ -1,11 +1,10 @@
-#include "include/Library.h"
+#include "Library/Library.h"
+#include "Program/Program.h"
 
-int main() {
-    // FileLogger lib("new_file.txt", MESSAGE_IMPORTANCE::LOW);
+int main(int argc, char **argv) {
 
-    SocketLogger lib("127.0.0.1", "3490", MESSAGE_IMPORTANCE::LOW);
-
-    lib.addMessageToLog(MESSAGE_IMPORTANCE::MEDIUM, "Brbrbr");
+    Program program_(argc, argv);
+    program_.processRequests();
 
     return 0;
 }

@@ -14,3 +14,19 @@ add_library(LoggerLibrary
 target_include_directories(LoggerLibrary PUBLIC
     ${PROJECT_SOURCE_DIR}/include
 )
+
+add_executable(Program
+    main.cpp
+    Program/Program.cpp
+    include/Program/Program.h
+    include/ThreadClasses/ThreadClasses.h
+    ThreadClasses/ThreadClasses.cpp
+)
+
+target_include_directories(Program PRIVATE
+    ${PROJECT_SOURCE_DIR}/include
+)
+
+target_link_libraries(Program PRIVATE
+    LoggerLibrary
+)

@@ -47,12 +47,14 @@ SocketLogger::~SocketLogger() {
     close(socket_);
 }
 
-void SocketLogger::addMessageToLog(MESSAGE_IMPORTANCE level, const char* message) {
+void SocketLogger::addMessageToLog(MESSAGE_IMPORTANCE level, std::string& message) {
     if (level < level_)
         return;
+    
+    const char* new_message = message.c_str();
 
     if (socket_ > -1) {
-        if (send(socket_, message, std::strlen(message), 0) == -1) 
+        if (send(socket_, new_message, std::strlen(new_message), 0) == -1) 
             perror("send");
     }
 }

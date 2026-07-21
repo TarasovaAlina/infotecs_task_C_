@@ -36,7 +36,7 @@ public:
     virtual ~BaseLogger() = default;
 
     void changeImportanceLevel(MESSAGE_IMPORTANCE level) noexcept { level_ = level; };
-    virtual void addMessageToLog(MESSAGE_IMPORTANCE level, const char* message) = 0;
+    virtual void addMessageToLog(MESSAGE_IMPORTANCE level, std::string& message) = 0;
 
 protected:
 
@@ -49,7 +49,7 @@ public:
 
     FileLogger(const char* file, MESSAGE_IMPORTANCE level) noexcept; //при инифиализации создается текстовый файл
 
-    void addMessageToLog(MESSAGE_IMPORTANCE level, const char* message) override;
+    void addMessageToLog(MESSAGE_IMPORTANCE level, std::string& message) override;
 
     ~FileLogger();
 
@@ -65,7 +65,7 @@ public:
 
     SocketLogger(const char* host_, const char* port_, MESSAGE_IMPORTANCE level) noexcept; 
 
-    void addMessageToLog(MESSAGE_IMPORTANCE level, const char* message) override;
+    void addMessageToLog(MESSAGE_IMPORTANCE level, std::string& message) override;
 
     void *get_in_addr(); 
 
@@ -81,9 +81,13 @@ private:
 
 class LoggerFactory {
 public:
-    static std::unique_ptr<BaseLogger> CreateFileLogger(const char* file, MESSAGE_IMPORTANCE level);
+    static std::unique_ptr<BaseLogger> CreateFileLogger(const char* file, MESSAGE_IMPORTANCE level) {
+        return std::make_unique<FileLogger>(file, level);
+    };
 
-    static std::unique_ptr<BaseLogger> CreateSocketLogger(const char* host, const char* port, MESSAGE_IMPORTANCE level);
+    static std::unique_ptr<BaseLogger> CreateSocketLogger(const char* host, const char* port, MESSAGE_IMPORTANCE level) {
+        return std::make_unique<SocketLogger>(host, port, level);
+    }
 };
 
 #endif
