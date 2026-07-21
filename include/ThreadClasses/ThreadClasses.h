@@ -15,12 +15,14 @@ public:
 
     void push(MESSAGE_IMPORTANCE level, std::string& message);
     std::pair<MESSAGE_IMPORTANCE, std::string> pop();
+    void stop();
 
 private:
 
     std::queue<std::pair<MESSAGE_IMPORTANCE, std::string>> queue_;
     mutable std::mutex mutex_;
     std::condition_variable cv;
+    bool stop_flag_{0};
 
 };
 

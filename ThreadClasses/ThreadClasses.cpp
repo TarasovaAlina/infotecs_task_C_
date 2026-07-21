@@ -9,24 +9,49 @@ void ThreadQueue::push(MESSAGE_IMPORTANCE level, std::string& message) {
 
 std::pair<MESSAGE_IMPORTANCE, std::string> ThreadQueue::pop() {
     std::unique_lock<std::mutex> lock(mutex_);
-    cv.wait(lock, [this]() { return !queue_.empty(); } );
+
+    cv.wait(lock, [this]() { return !queue_.empty() || stop_flag_; } );
+
+    if (queue_.empty() && stop_flag_) {
+        return;
+    }
+
     auto val = queue_.front();
     queue_.pop();
 
     return val;
 }
 
+void ThreadQueue::stop() {
+    {
+    std::lock_guard<std::mutex> lock(mutex_);
+    stop_flag_ = true;
+    }
+
+    cv_.notify_all();
+}
+
 void ThreadProcessRequest::acceptRequest(ThreadQueue& queue) {
     while (true) {
+        
         std::string str{};
         MESSAGE_IMPORTANCE m_i{};
 
         std::cout << "Put the importance level and the following message please...\n";
         getline(std::cin, str);
 
-        int num = str[0] - '0';
-        MESSAGE_IMPORTANCE mess_imp = static_cast<MESSAGE_IMPORTANCE>(num);
-        std::string message = str.substr(2, str.size() - 2);
+        if (str == "exit") {
+            queue.stop();
+            break;
+        }
+
+        if (isdigit(str[0])) {
+            int num = str[0] - '0';
+            MESSAGE_IMPORTANCE mess_imp = static_cast<MESSAGE_IMPORTANCE>(num);
+            std::string message = str.substr(2, str.size() - 2);
+        } else {
+            message = str;
+        }
 
         queue.push(mess_imp, message);
     }
@@ -34,7 +59,11 @@ void ThreadProcessRequest::acceptRequest(ThreadQueue& queue) {
 
 void ThreadProcessRequest::sendRequest(ThreadQueue& queue, BaseLogger* LogLibrary) {
     while (true) {
-        auto value = queue.pop();
-        LogLibrary->addMessageToLog (value.first, value.second);
-    }
+    auto value = queue.pop();
+
+    if (value.second.empty())
+        break;
+
+    LogLibrary->addMessageToLog(value.first, value.second);
+}
 }
