@@ -95,7 +95,7 @@ public:
     /**
      * @brief Геттер для получения уровня по умолчанию.
      */
-    MESSAGE_IMPORTANCE level() const noexcept { return level_ };
+    MESSAGE_IMPORTANCE level() const noexcept { return level_; };
 
 protected:
 
