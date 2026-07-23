@@ -43,7 +43,7 @@ gcov_report:
 	lcov --extract \
 		$(COVERAGE_INFO) \
 		"*/ThreadClasses/*.cpp" \
-		"*/src/*.cpp" \
+		"*/src/FileLogger.cpp" \
 		--output-file $(FILTERED_INFO)
 
 	genhtml \

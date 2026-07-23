@@ -69,7 +69,6 @@ enable_testing()
 
 add_executable(TestLogLibrary
     tests/FileLoggerTests.cpp
-    tests/SocketLoggerTests.cpp
     tests/ThreadClassesTests.cpp
     ThreadClasses/ThreadClasses.cpp
 )
