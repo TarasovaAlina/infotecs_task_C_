@@ -65,4 +65,4 @@ uninstall:
 	rm -rf build
 
 clean:
-	rm -rf docs *.gz build LogLibrary
+	rm -rf docs *.gz LogLibrary

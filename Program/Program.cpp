@@ -54,7 +54,6 @@ bool checkInputValues(int argc, char** argv) noexcept {
 }
 
 void Program::acceptRequest() {
-    std::cout << "Accept thread id: " << std::this_thread::get_id() << '\n';
     while (true) {
         
         std::string str{}, message{};
@@ -103,7 +102,6 @@ void Program::acceptRequest() {
 
 
 void Program::sendRequest() {
-    std::cout << "Send thread id: " << std::this_thread::get_id() << '\n';
     while (true) {
         auto value = m_q_.pop();
 
