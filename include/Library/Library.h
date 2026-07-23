@@ -3,19 +3,11 @@
 
 #include <map>
 #include <memory>
-#include <iostream>
+#include <string>
 #include <fstream>
 #include <chrono>
-#include <iomanip>
-#include <cstring>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <netdb.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
 
 /**
@@ -134,35 +126,59 @@ private:
 
 /**
  * @class SocketLogger
- * @brief Класс библиотеки для с сокетами
- * @details Создает сокет и задает уровень по умолчанию при инициализации.
- * Уровень возможно сменить во время работы.
+ * @brief Класс библиотеки логирования через сокет.
+ * @details Создает TCP-соединение с сервером логирования и отправляет
+ * сообщения через установленное соединение. Поддерживает изменение
+ * уровня важности сообщений во время работы.
  */
 class SocketLogger : public BaseLogger {
 public:
 
     /**
-     * @brief Конструктор с параметрами
-     * @param host_ Номер хоста
-     * @param port_ Номер порта
-     * @param level Уровень по умолчанию
+     * @brief Конструктор с параметрами.
+     * @param host_ IP-адрес сервера для подключения.
+     * @param port_ Порт сервера.
+     * @param level Уровень важности сообщений по умолчанию.
+     * @details При создании объекта устанавливает параметры подключения
+     * и выполняет подключение к серверу.
      */
-    SocketLogger(const char* host_, const char* port_, MESSAGE_IMPORTANCE level) noexcept; 
-
-    void addMessageToLog(MESSAGE_IMPORTANCE level, std::string& message, std::tm* time) override;
-
-    /**
-     * @brief Метод на обработку протокола
-     */
-    void *get_in_addr(); 
+    SocketLogger(const char* host_, const char* port_, MESSAGE_IMPORTANCE level);
 
     ~SocketLogger();
 
+    /**
+     * @brief Добавляет сообщение в журнал.
+     * @param level Уровень важности сообщения.
+     * @param message Текст сообщения.
+     * @param time Временная метка создания сообщения.
+     * @details Проверяет уровень важности сообщения относительно установленного
+     * уровня фильтрации, формирует строку лога с датой, временем и уровнем
+     * важности, после чего отправляет ее через сокет.
+     */
+    void addMessageToLog(MESSAGE_IMPORTANCE level,
+                         std::string& message,
+                         std::tm* time) override;
+
+
 private:
 
-    int socket_; ///< дескриптор сокета
-    struct addrinfo hints, *servinfo, *p; ///< структуры для работы с сокетом и сервером
-    char s[INET6_ADDRSTRLEN]; ///< Массив чаров для отображенгия подключения
+    /**
+     * @brief Устанавливает соединение с сервером.
+     * @details Выполняет подключение созданного сокета к указанному адресу.
+     */
+    void connect_client();
+
+
+    /**
+     * @brief Отправляет строку через сокет.
+     * @param line Сообщение для отправки.
+     */
+    void send_info(const std::string& line);
+
+    int sock; ///< Дескриптор клиентского сокета.
+
+    struct sockaddr_in addr; ///< Структура с адресом и параметрами подключения.
+
 };
 
 /**

@@ -1,5 +1,6 @@
 #include "Library/Library.h"
 #include <iostream>
+#include <iomanip>
 
 FileLogger::FileLogger(const char* file, MESSAGE_IMPORTANCE level) noexcept: BaseLogger(level), file_{file} {
     file_flow_.open(file_, std::ios::out | std::ios::app);

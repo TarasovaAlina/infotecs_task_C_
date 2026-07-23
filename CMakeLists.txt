@@ -4,6 +4,10 @@ project(LoggerLibrary VERSION 0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# ======================================
+# ==== Сборка библиотеки и клиента =====
+# ======================================
+
 option(BUILD_SHARED_LIBS "Build shared library" OFF)
 
 add_library(LoggerLibrary
@@ -36,6 +40,23 @@ target_include_directories(Program PRIVATE
 target_link_libraries(Program PRIVATE
     LoggerLibrary
 )
+
+# ============================
+# ====== Сборка сервера ======
+# ============================
+
+add_executable(Server
+    server_main.cpp
+    Server/Server.cpp
+    include/Server/Server.h
+)
+
+target_include_directories(Server PRIVATE
+    ${PROJECT_SOURCE_DIR}/include
+)
+
+target_compile_options(Server PRIVATE --coverage)
+target_link_options(Server PRIVATE --coverage)
 
 # ============================
 # === Тестирование с GTest ===

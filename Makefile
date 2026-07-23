@@ -15,11 +15,11 @@ static_library:
 
 dynamic_library:
 	cmake -S . -B $(BUILD_DIR) -DBUILD_SHARED_LIBS=ON
-	cmake --build $(BUILD_DIR) --target Program
+	cmake --build $(BUILD_DIR) --target LoggerLibrary
 
 install:
 	cmake -S . -B $(BUILD_DIR)
-	cmake --build $(BUILD_DIR) --target Program
+	cmake --build $(BUILD_DIR) --target Program Server
 
 test:
 	cmake -S . -B $(GTEST_BUILD_DIR)
