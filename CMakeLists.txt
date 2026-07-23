@@ -11,6 +11,9 @@ add_library(LoggerLibrary
         src/SocketLibrary.cpp
 )
 
+target_compile_options(LoggerLibrary PRIVATE --coverage)
+target_link_options(LoggerLibrary PRIVATE --coverage)
+
 target_include_directories(LoggerLibrary PUBLIC
     ${PROJECT_SOURCE_DIR}/include
 )
@@ -23,6 +26,9 @@ add_executable(Program
     ThreadClasses/ThreadClasses.cpp
 )
 
+target_compile_options(Program PRIVATE --coverage)
+target_link_options(Program PRIVATE --coverage)
+
 target_include_directories(Program PRIVATE
     ${PROJECT_SOURCE_DIR}/include
 )
@@ -30,3 +36,29 @@ target_include_directories(Program PRIVATE
 target_link_libraries(Program PRIVATE
     LoggerLibrary
 )
+
+# ============================
+# === Тестирование с GTest ===
+# ============================
+
+find_package(GTest REQUIRED)
+include(GoogleTest)
+
+enable_testing()
+
+add_executable(TestLogLibrary
+    tests/FileLoggerTests.cpp
+    tests/SocketLoggerTests.cpp
+    tests/ThreadClassesTests.cpp
+    ThreadClasses/ThreadClasses.cpp
+)
+
+target_link_libraries(TestLogLibrary PRIVATE
+    LoggerLibrary
+    GTest::gtest_main
+)
+
+gtest_discover_tests(TestLogLibrary)
+
+target_compile_options(TestLogLibrary PRIVATE --coverage)
+target_link_options(TestLogLibrary PRIVATE --coverage)

@@ -47,7 +47,7 @@ SocketLogger::~SocketLogger() {
     close(socket_);
 }
 
-void SocketLogger::addMessageToLog(MESSAGE_IMPORTANCE level, std::string& message) {
+void SocketLogger::addMessageToLog(MESSAGE_IMPORTANCE level, std::string& message, std::tm* time) {
     if (level < level_)
         return;
     

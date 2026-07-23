@@ -3,8 +3,10 @@
 
 int main(int argc, char **argv) {
 
-    Program program_(argc, argv);
-    program_.processRequests();
+    if (checkInputValues(argc, argv)) {
+        Program program_(argc, argv);
+        program_.processRequests();
+    }
 
     return 0;
 }
