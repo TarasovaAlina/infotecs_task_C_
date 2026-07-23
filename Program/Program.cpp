@@ -36,20 +36,27 @@ bool checkInputValues(int argc, char** argv) noexcept {
     std::string type = argv[1];
     if (type != "FILE_LOGGER" && type != "SOCKET_LOGGER")
     {
-        std::cout << "Choose the type of Library and try again.";
+        std::cout << "Choose the type of Library and try again." << std::endl;
         res = false;
     }
 
-    if ((type == "FILE_LOGGER" && argc == 4) ||
-        (type == "SOCKET_LOGGER" && argc == 5)) 
-    {
-        int num = static_cast<int>(argv[argc - 1][0]) - 48;
-        if (num > -1 && num < 2 && argv[argc - 1][1] == '\0');
-            res = true;
-    } else {
+    bool isCorrectType =
+        (type == "FILE_LOGGER" && argc == 4) ||
+        (type == "SOCKET_LOGGER" && argc == 5);
+
+    if (!isCorrectType) {
         std::cout << "Put the correct data and try again.";
-        res = false;
+        return false;
     }
+
+    char level = argv[argc - 1][0];
+
+    if (argv[argc - 1][1] != '\0' || level < '0' || level > '2') {
+        std::cout << "Put the correct data and try again.";
+        return false;
+    }
+
+    return true;
     return res;
 }
 
@@ -75,26 +82,28 @@ void Program::acceptRequest() {
             break;
         }
 
-        if (str == "SET LEVEL 0" ||
-            str == "SET LEVEL 1" ||
-            str == "SET LEVEL 2") 
+        const std::string command = "SET LEVEL ";
+
+        if (str.compare(0, command.size(), command) == 0 &&
+            str.size() == command.size() + 1 &&
+            str.back() >= '0' &&
+            str.back() <= '2')
         {
-            size_t NUM_INDEX = 10;
-            int num = str[NUM_INDEX] - '0';
-            m_i = static_cast<MESSAGE_IMPORTANCE>(num);
+            m_i = static_cast<MESSAGE_IMPORTANCE>(str.back() - '0');
             LogLibrary->changeImportanceLevel(m_i);
 
-            std::cout << "You change the level." << std::endl;
-
-        } else {
-            if (isdigit(str[0])) {
-                int num = str[0] - '0';
-                m_i = static_cast<MESSAGE_IMPORTANCE>(num);
-                message = str.substr(2, str.size() - 2);
+            std::cout << "You changed the level.\n";
+        }
+        else
+        {
+            if (!str.empty() && std::isdigit(static_cast<unsigned char>(str[0]))) {
+                m_i = static_cast<MESSAGE_IMPORTANCE>(str[0] - '0');
+                message = str.substr(2);
             } else {
-                message = str;
                 m_i = LogLibrary->level();
+                message = str;
             }
+
             m_q_.push(m_i, message, time);
         }
     }
